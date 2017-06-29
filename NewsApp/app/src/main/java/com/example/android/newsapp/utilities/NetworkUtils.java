@@ -24,7 +24,7 @@ public final class NetworkUtils {
 
     private static final String source = "the-next-web";
     private static final String term = "latest";
-    private static final String apiKey = "112233445566778899";
+    private static final String apiKey = "7c823937a9aa41ab8ff74736f579f572";
 
     public static URL buildURL(){
         Uri buildUri = Uri.parse(News_Base_URL).buildUpon()
@@ -36,10 +36,11 @@ public final class NetworkUtils {
         URL url = null;
         try{
             url = new URL(buildUri.toString());
+            Log.d(TAG, "url=" + url);
 
         }catch(IOException e){
             e.printStackTrace();
-            Log.d(TAG, "url=" + url);
+            Log.d(TAG, "error url=" + url);
         }
         return url;
 

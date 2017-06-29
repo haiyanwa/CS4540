@@ -17,12 +17,14 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
     private String[] mNewsTitleData;
     private String[] mNewsDescriptionData;
     private String[] mNewsDate;
+    private ArrayList<NewsItem> newsItems;
 
     final private ListItemClickListener mOnClickListener;
 
     public interface ListItemClickListener{
 
-        void onListItemClick(int clickedItemIndex);
+        //void onListItemClick(int clickedItemIndex);
+        void onListItemClick(NewsItem newsItem);
     }
 
     public NewsAppAdapter(ListItemClickListener listener){
@@ -43,18 +45,38 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
 
     @Override
     public void onBindViewHolder(NewsAppAdapter.NewsAppAdapterViewHolder holder, int position) {
-        holder.newsTitleTextView.setText(mNewsTitleData[position]);
-        holder.newsDescriptionView.setText(mNewsDescriptionData[position]);
-        holder.newsDateView.setText(mNewsDate[position]);
+
+        String title = newsItems.get(position).getTitle();
+        String description = newsItems.get(position).getDescription();
+        String date = newsItems.get(position).getTimestamp();
+        holder.newsTitleTextView.setText(title);
+        holder.newsDescriptionView.setText(description);
+        holder.newsDateView.setText(date);
     }
 
     @Override
     public int getItemCount() {
-        if (mNewsTitleData==null) {
+        if (newsItems==null) {
             return 0;
         } else {
-            return mNewsTitleData.length;
+            return newsItems.size();
         }
+    }
+
+
+    void setNewsData(ArrayList<NewsItem> newsItems){
+
+        /**mNewsTitleData = new String[newsItems.size()];
+        mNewsDescriptionData = new String[newsItems.size()];
+        mNewsDate = new String[newsItems.size()];
+
+        for(int i=0;i<mNewsTitleData.length;i++){
+            mNewsTitleData[i] = newsItems.get(i).getTitle();
+            mNewsDescriptionData[i] = newsItems.get(i).getDescription();
+            mNewsDate[i] =  newsItems.get(i).getTimestamp();
+        }*/
+        this.newsItems = newsItems;
+        notifyDataSetChanged();
     }
 
     public class NewsAppAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -74,22 +96,9 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         @Override
         public void onClick(View view) {
             int onClickPosition = getAdapterPosition();
-            mOnClickListener.onListItemClick(onClickPosition);
+
+            mOnClickListener.onListItemClick(newsItems.get(onClickPosition));
         }
-    }
-
-    void setNewsData(ArrayList<NewsItem> newsItems){
-
-        mNewsTitleData = new String[newsItems.size()];
-        mNewsDescriptionData = new String[newsItems.size()];
-        mNewsDate = new String[newsItems.size()];
-
-        for(int i=0;i<mNewsTitleData.length;i++){
-            mNewsTitleData[i] = newsItems.get(i).getTitle();
-            mNewsDescriptionData[i] = newsItems.get(i).getDescription();
-            mNewsDate[i] =  newsItems.get(i).getTimestamp();
-        }
-        notifyDataSetChanged();
     }
 
 }
