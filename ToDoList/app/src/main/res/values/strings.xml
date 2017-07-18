@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ToDoList</string>
+    <string name="done">Done</string>
+    <string name="category_prompt">Choose a category</string>
+    <string-array name="category_array">
+        <item>Personal</item>
+        <item>Work</item>
+        <item>School</item>
+        <item>Hobbie</item>
+    </string-array>
+
+    <string name="category_personal">Personal</string>
+    <string name="category_work">Work</string>
+    <string name="category_school">School</string>
+    <string name="category_hobbie">Hobbie</string>
+</resources>
