@@ -1,38 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:shrinkColumns="*"
+    android:stretchColumns="*"
     android:padding="10dp">
 
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="match_parent"
+    <TableRow
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:layout_gravity="center_vertical|start"
-        android:text="To do description"/>
+        android:gravity="center">
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="left"
+            android:textSize="20dp"
+            android:padding="3dip"
+            android:text="To do description"/>
 
-    <TextView
-        android:id="@+id/dueDate"
-        android:layout_width="match_parent"
+        <CheckBox
+            android:id="@+id/mark_as_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="right"
+            android:padding="3dip"
+            android:onClick="onCheckboxClicked"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="14dp"
-        android:layout_gravity="center_vertical|start"
-        android:text="06-04-2017"/>
+        android:gravity="left">
 
-    <TextView
-        android:id="@+id/category"
-        android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/dueDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_span="2"
+            android:textSize="14dp"
+            android:padding="3dip"
+            android:text="06-04-2017"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="14dp"
-        android:layout_gravity="center_vertical|start"
-        android:text="personal"/>
+        android:gravity="left">
+        <TextView
+            android:id="@+id/category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_span="2"
+            android:textSize="14dp"
+            android:padding="3dip"
+            android:text="personal"/>
 
-    <CheckBox
-        android:id="@+id/mark_as_done"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:onClick="onCheckboxClicked"/>
 
-</LinearLayout>
+    </TableRow>
+
+</TableLayout>

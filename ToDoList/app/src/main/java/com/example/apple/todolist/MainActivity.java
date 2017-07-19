@@ -106,6 +106,16 @@ public class MainActivity extends AppCompatActivity implements AddToDoFragment.O
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             }
 
+        //show all items
+        }else{
+            Context context = MainActivity.this;
+            cursor = getAllItems(db);
+            if(cursor.getCount() >= 1){
+                refreshUI(cursor, this);
+            }else{
+                String message = "Nothing to show";
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            }
         }
         return true;
     }
@@ -195,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements AddToDoFragment.O
         }).attachToRecyclerView(rv);
     }
 
+    //overwrite onCheckboxClick method in the interface
+    //when checkbox is clicked, update the item in the db as "Done" by calling updateStatus
     @Override
     public void onCheckboxClick(long id, boolean isChecked) {
         if(mToast != null){

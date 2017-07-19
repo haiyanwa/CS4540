@@ -20,6 +20,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
 
     private Cursor cursor;
     private ItemClickListener listener;
+    //reference for CheckboxClickListener
     private CheckboxClickListener checkboxListener;
     private String TAG = "todolistadapter";
 
@@ -48,11 +49,13 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
         //add category to ItemClickListener interface
         void onItemClick(int pos, String description, String duedate, long id, String category);
     }
+
+    //interface for CheckboxClickListener
     public interface CheckboxClickListener {
         void onCheckboxClick(long id, boolean isChecked);
     }
 
-
+    //add CheckboxClickListener to ToDoListAdapter's constructor
     public ToDoListAdapter(Cursor cursor, ItemClickListener listener, CheckboxClickListener checkboxListerner) {
         this.cursor = cursor;
         this.listener = listener;
@@ -105,7 +108,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
             //show category in the view
             category.setText(categoryName);
 
-            //check if this item is "done", 0: false 1: true, if it's true then check the checkbox
+            //check the checkbox if this item is "done", 0: false 1: true
             if(cursor.getInt(cursor.getColumnIndex(Contract.TABLE_TODO.COLUMN_NAME_DONE)) == 0){
                 //not done yet
                 statusCheckbox.setChecked(false);

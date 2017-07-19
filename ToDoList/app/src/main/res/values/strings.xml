@@ -8,7 +8,7 @@
         <item>School</item>
         <item>Hobbie</item>
     </string-array>
-
+    <string name="category_default">All</string>
     <string name="category_personal">Personal</string>
     <string name="category_work">Work</string>
     <string name="category_school">School</string>

@@ -2,23 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/categoryPersonal"
+        android:id="@+id/categoryDefault"
         android:orderInCategory="1"
+        android:title="@string/category_default"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/categoryPersonal"
+        android:orderInCategory="2"
         android:title="@string/category_personal"
         app:showAsAction="never"/>
     <item
         android:id="@+id/categoryWork"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:title="@string/category_work"
         app:showAsAction="never"/>
     <item
         android:id="@+id/categorySchool"
-        android:orderInCategory="3"
+        android:orderInCategory="4"
         android:title="@string/category_school"
         app:showAsAction="never"/>
     <item
         android:id="@+id/categoryHobbie"
-        android:orderInCategory="4"
+        android:orderInCategory="5"
         android:title="@string/category_hobbie"
         app:showAsAction="never"/>
 </menu>
