@@ -1,11 +1,14 @@
 package com.example.android.newsapp;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.android.newsapp.data.NewsAppContract;
 
 import java.util.ArrayList;
 
@@ -14,10 +17,9 @@ import java.util.ArrayList;
  */
 
 public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppAdapterViewHolder>{
-    private String[] mNewsTitleData;
-    private String[] mNewsDescriptionData;
-    private String[] mNewsDate;
+
     private ArrayList<NewsItem> newsItems;
+    private Cursor mCursor;
 
     final private ListItemClickListener mOnClickListener;
 
@@ -27,8 +29,9 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         void onListItemClick(NewsItem newsItem);
     }
 
-    public NewsAppAdapter(ListItemClickListener listener){
+    public NewsAppAdapter(ListItemClickListener listener,  Cursor cursor){
         mOnClickListener = listener;
+        mCursor = cursor;
 
     }
 
@@ -46,9 +49,21 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
     @Override
     public void onBindViewHolder(NewsAppAdapter.NewsAppAdapterViewHolder holder, int position) {
 
+        if(!mCursor.moveToPosition(position)){
+            return;
+        }
+
+        /** old implement without database
         String title = newsItems.get(position).getTitle();
         String description = newsItems.get(position).getDescription();
-        String date = newsItems.get(position).getTimestamp();
+        String date = newsItems.get(position).getTimestamp();*/
+
+        //get the data we want from database cursor
+        String title = mCursor.getString(mCursor.getColumnIndex(NewsAppContract.NewsAppEntry.COLUMN_TITLE));
+        String description = mCursor.getString(mCursor.getColumnIndex(NewsAppContract.NewsAppEntry.COLUMN_DESCRIPTION));
+        String date = mCursor.getString(mCursor.getColumnIndex(NewsAppContract.NewsAppEntry.COLUMN_TIMESTAMP));
+
+        //bind data to views
         holder.newsTitleTextView.setText(title);
         holder.newsDescriptionView.setText(description);
         holder.newsDateView.setText(date);

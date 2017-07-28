@@ -1,6 +1,9 @@
 package com.example.android.newsapp;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,11 +18,14 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.newsapp.data.NewsAppContract;
+import com.example.android.newsapp.data.NewsAppDBHelper;
 import com.example.android.newsapp.utilities.NetworkUtils;
 import com.example.android.newsapp.utilities.NewsJsonUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NewsAppAdapter.ListItemClickListener{
 
@@ -29,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
 
     private RecyclerView mRecyclerView;
     private NewsAppAdapter mNewsAppAdapter;
+
+    //database object reference
+    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
@@ -41,13 +50,22 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
+        NewsAppDBHelper newsAppDBHelper = new NewsAppDBHelper(this);
+        mDb = newsAppDBHelper.getWritableDatabase();
+
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
-        mNewsAppAdapter = new NewsAppAdapter(this);
+
+        loadNewsData();
+
+        //get all news items in the database
+        Cursor cursor = getAllNewsItems();
+
+        //create adapter object with the cursor
+        mNewsAppAdapter = new NewsAppAdapter(this, cursor);
         mRecyclerView.setAdapter(mNewsAppAdapter);
 
 
-        loadNewsData();
 
     }
 
@@ -64,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
         openWebPage(newsItem.getUrl());
     }
 
+    //using AsyncTask to retrieve data from remote api and convert json into List<NewsItem>
+    //save into database
     public class sendNewsRequest extends AsyncTask<String, Void, ArrayList<NewsItem>> {
 
         @Override
@@ -82,6 +102,9 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
                 String jsonNewsSearchResult = NetworkUtils.getResponseFromHttpUrl(newsRequestUrl);
                 Log.d(TAG, "result " + jsonNewsSearchResult);
                 ArrayList<NewsItem> parsedSearchResult = NewsJsonUtils.parseJson(jsonNewsSearchResult);
+
+                //insert retrieved data into database
+                insertNewsItemList(parsedSearchResult);
 
                 return parsedSearchResult;
                 //return jsonNewsSearchResult;
@@ -137,6 +160,43 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
+    }
+
+    //insert a list of NewsItem data into database
+    private void insertNewsItemList(List<NewsItem> newsItems){
+        for(NewsItem newsItem : newsItems){
+            addNewsData(newsItem);
+        }
+    }
+
+
+    //method to insert NewsItem data to database
+    private long addNewsData(NewsItem newsItem){
+        ContentValues cv = new ContentValues();
+
+        cv.put(NewsAppContract.NewsAppEntry.COLUMN_TITLE,newsItem.getTitle());
+        cv.put(NewsAppContract.NewsAppEntry.COLUMN_URL,newsItem.getUrl());
+        cv.put(NewsAppContract.NewsAppEntry.COLUMN_AUTHOR,newsItem.getAuthor());
+        cv.put(NewsAppContract.NewsAppEntry.COLUMN_URL_IMAGE,newsItem.getUrl_image());
+        cv.put(NewsAppContract.NewsAppEntry.COLUMN_DESCRIPTION,newsItem.getDescription());
+        cv.put(NewsAppContract.NewsAppEntry.COLUMN_TIMESTAMP,newsItem.getTimestamp());
+
+        // TODO (8) call insert to run an insert query on TABLE_NAME with the ContentValues created
+        return mDb.insert(NewsAppContract.NewsAppEntry.TABLE_NAME, null, cv);
+
+    }
+
+    //get all news items in the database
+    private Cursor getAllNewsItems(){
+        return mDb.query(
+                NewsAppContract.NewsAppEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                NewsAppContract.NewsAppEntry.COLUMN_TIMESTAMP
+        );
     }
 
 
