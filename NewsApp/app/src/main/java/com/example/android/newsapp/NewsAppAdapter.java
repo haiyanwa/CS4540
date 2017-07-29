@@ -20,6 +20,7 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
 
     private ArrayList<NewsItem> newsItems;
     private Cursor mCursor;
+    private NewsItem newsItem;
 
     final private ListItemClickListener mOnClickListener;
 
@@ -29,9 +30,8 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         void onListItemClick(NewsItem newsItem);
     }
 
-    public NewsAppAdapter(ListItemClickListener listener,  Cursor cursor){
+    public NewsAppAdapter(ListItemClickListener listener){
         mOnClickListener = listener;
-        mCursor = cursor;
 
     }
 
@@ -62,6 +62,10 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         String title = mCursor.getString(mCursor.getColumnIndex(NewsAppContract.NewsAppEntry.COLUMN_TITLE));
         String description = mCursor.getString(mCursor.getColumnIndex(NewsAppContract.NewsAppEntry.COLUMN_DESCRIPTION));
         String date = mCursor.getString(mCursor.getColumnIndex(NewsAppContract.NewsAppEntry.COLUMN_TIMESTAMP));
+        String url = mCursor.getString(mCursor.getColumnIndex(NewsAppContract.NewsAppEntry.COLUMN_URL));
+
+        //construct a NewsItem object to pass to onClick method
+        newsItem = new NewsItem(title, description,url,date);
 
         //bind data to views
         holder.newsTitleTextView.setText(title);
@@ -69,6 +73,8 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         holder.newsDateView.setText(date);
     }
 
+    /**
+     * Old implement before using database
     @Override
     public int getItemCount() {
         if (newsItems==null) {
@@ -76,12 +82,21 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         } else {
             return newsItems.size();
         }
+    }*/
+
+    @Override
+    public int getItemCount() {
+        if (mCursor == null) {
+            return 0;
+        }
+        return mCursor.getCount();
     }
 
 
     void setNewsData(ArrayList<NewsItem> newsItems){
 
-        /**mNewsTitleData = new String[newsItems.size()];
+        /** Old implement before using database
+         * mNewsTitleData = new String[newsItems.size()];
         mNewsDescriptionData = new String[newsItems.size()];
         mNewsDate = new String[newsItems.size()];
 
@@ -92,6 +107,19 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         }*/
         this.newsItems = newsItems;
         notifyDataSetChanged();
+    }
+
+    public void swapCursor(Cursor cursor) {
+        // check if this cursor is the same as the previous cursor
+        //if same then return
+        if (mCursor == cursor) {
+            return;
+        }
+        //check if this is a valid cursor, then update the cursor
+        if (cursor != null) {
+            this.mCursor = cursor;
+            this.notifyDataSetChanged();
+        }
     }
 
     public class NewsAppAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -112,7 +140,10 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         public void onClick(View view) {
             int onClickPosition = getAdapterPosition();
 
-            mOnClickListener.onListItemClick(newsItems.get(onClickPosition));
+            //Old implementation before using database
+            //mOnClickListener.onListItemClick(newsItems.get(onClickPosition));
+
+            mOnClickListener.onListItemClick(newsItem);
         }
     }
 

@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,7 +30,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NewsAppAdapter.ListItemClickListener{
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, NewsAppAdapter.ListItemClickListener{
 
     private TextView mNewsAPITextVIEW;
     private ProgressBar mProgressIndicator;
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
 
     //database object reference
     private SQLiteDatabase mDb;
+
+    //loader ID
+    private static final int ATASK_LOADER_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
@@ -56,22 +62,87 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        loadNewsData();
+        //Old implements for AsyncTask + database, no need anymore
+        //loadNewsData();
 
+        //Old implements for AsyncTask + database, no need anymore
         //get all news items in the database
-        Cursor cursor = getAllNewsItems();
+        //Cursor cursor = getAllNewsItems();
 
-        //create adapter object with the cursor
-        mNewsAppAdapter = new NewsAppAdapter(this, cursor);
+        //create Adapter object and connect RecyclerView with this Adapter
+        mNewsAppAdapter = new NewsAppAdapter(this);
         mRecyclerView.setAdapter(mNewsAppAdapter);
 
-
-
+        //init AsyncTaskLoader
+        getSupportLoaderManager().initLoader(ATASK_LOADER_ID, null, this);
     }
 
     private void loadNewsData(){
         new sendNewsRequest().execute();
 
+    }
+
+    //Implementing AsyncTaskLoader to replace AsyncTask
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // re-queries for all tasks
+        getSupportLoaderManager().restartLoader(ATASK_LOADER_ID, null, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<Cursor>(this) {
+
+            // Initialize a Cursor
+            Cursor mTaskData = null;
+
+            //From Udacity Excercise example
+            //onStartLoading() is called when a loader first starts loading data
+            @Override
+            protected void onStartLoading() {
+                if (mTaskData != null) {
+                    // Delivers any previously loaded data immediately
+                    deliverResult(mTaskData);
+                } else {
+                    // Force a new load
+                    forceLoad();
+                }
+            }
+
+            // use loadInBackground() to load of data in the background
+            @Override
+            public Cursor loadInBackground() {
+                // Will implement to load data
+                try{
+                    //get cursor by querying database
+                    return getAllNewsItems();
+
+                }catch (Exception e){
+                    Log.d(TAG, "Failed to load data in the backgroud");
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            // deliverResult sends the result of the load, a Cursor, to the registered listener
+            public void deliverResult(Cursor data) {
+                mTaskData = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mNewsAppAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mNewsAppAdapter.swapCursor(data);
     }
 
     @Override
@@ -82,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
         openWebPage(newsItem.getUrl());
     }
 
+    //Old implement before using AsyncTaskLoader--------------------------------------------
     //using AsyncTask to retrieve data from remote api and convert json into List<NewsItem>
     //save into database
     public class sendNewsRequest extends AsyncTask<String, Void, ArrayList<NewsItem>> {
@@ -124,7 +196,8 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
                     String title = newsItem.getTitle();
                     mNewsAPITextVIEW.append(title + "\n\n\n");
                 }*/
-                mNewsAppAdapter.setNewsData(newsItems);
+                //Old implementation
+                //mNewsAppAdapter.setNewsData(newsItems);
                 /**NewsAppAdapter mNewsAdapter = new NewsAppAdapter(new NewsAppAdapter.ListItemClickListener(){
                     @Override
                     public void onListItemClick(int clickedItemIndex) {
@@ -136,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements NewsAppAdapter.Li
             }
         }
     }
+    //Old implement before using AsyncTaskLoader--------------------------------------------
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
