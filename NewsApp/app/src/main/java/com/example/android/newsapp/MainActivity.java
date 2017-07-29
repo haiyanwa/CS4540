@@ -25,10 +25,13 @@ import com.example.android.newsapp.data.NewsAppContract;
 import com.example.android.newsapp.data.NewsAppDBHelper;
 import com.example.android.newsapp.utilities.NetworkUtils;
 import com.example.android.newsapp.utilities.NewsJsonUtils;
+import com.example.android.newsapp.utilities.SchedulerUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.android.newsapp.data.NewsAppContract.NewsAppEntry.TABLE_NAME;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, NewsAppAdapter.ListItemClickListener{
 
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private NewsAppAdapter mNewsAppAdapter;
 
     //database object reference
-    private SQLiteDatabase mDb;
+    private static SQLiteDatabase mDb;
 
     //loader ID
     private static final int ATASK_LOADER_ID = 0;
@@ -75,12 +78,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         //init AsyncTaskLoader
         getSupportLoaderManager().initLoader(ATASK_LOADER_ID, null, this);
+
+        //sync news from remote
+        //syncNews();
+
+        //start job scheduler
+        SchedulerUtils.scheduler(this);
     }
 
+    /**Old implement
     private void loadNewsData(){
         new sendNewsRequest().execute();
 
-    }
+    }*/
 
     //Implementing AsyncTaskLoader to replace AsyncTask
 
@@ -99,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             // Initialize a Cursor
             Cursor mTaskData = null;
 
-            //From Udacity Excercise example
             //onStartLoading() is called when a loader first starts loading data
             @Override
             protected void onStartLoading() {
@@ -117,6 +126,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public Cursor loadInBackground() {
                 // Will implement to load data
                 try{
+                    //sync data
+                    syncNews();
+
                     //get cursor by querying database
                     return getAllNewsItems();
 
@@ -153,7 +165,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         openWebPage(newsItem.getUrl());
     }
 
-    //Old implement before using AsyncTaskLoader--------------------------------------------
+    public void syncNews(){
+        URL newsRequestUrl = NetworkUtils.buildURL();
+        try{
+
+            String jsonNewsSearchResult = NetworkUtils.getResponseFromHttpUrl(newsRequestUrl);
+            Log.d(TAG, "result " + jsonNewsSearchResult);
+            ArrayList<NewsItem> parsedSearchResult = NewsJsonUtils.parseJson(jsonNewsSearchResult);
+
+            //delete old first so there's no duplicates
+            deleteOldNews();
+
+            //insert retrieved data into database
+            insertNewsItemList(parsedSearchResult);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    //Old implement before using AsyncTaskLoader, not in use -------------------------------
     //using AsyncTask to retrieve data from remote api and convert json into List<NewsItem>
     //save into database
     public class sendNewsRequest extends AsyncTask<String, Void, ArrayList<NewsItem>> {
@@ -167,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         @Override
         protected ArrayList<NewsItem> doInBackground(String... params) {
 
-            //String location = params[0];
             URL newsRequestUrl = NetworkUtils.buildURL();
             try{
 
@@ -237,15 +267,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     //insert a list of NewsItem data into database
-    private void insertNewsItemList(List<NewsItem> newsItems){
+    public static void insertNewsItemList(List<NewsItem> newsItems){
         for(NewsItem newsItem : newsItems){
             addNewsData(newsItem);
         }
     }
 
-
     //method to insert NewsItem data to database
-    private long addNewsData(NewsItem newsItem){
+    public static long addNewsData(NewsItem newsItem){
         ContentValues cv = new ContentValues();
 
         cv.put(NewsAppContract.NewsAppEntry.COLUMN_TITLE,newsItem.getTitle());
@@ -256,14 +285,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         cv.put(NewsAppContract.NewsAppEntry.COLUMN_TIMESTAMP,newsItem.getTimestamp());
 
         // TODO (8) call insert to run an insert query on TABLE_NAME with the ContentValues created
-        return mDb.insert(NewsAppContract.NewsAppEntry.TABLE_NAME, null, cv);
+        return mDb.insert(TABLE_NAME, null, cv);
 
+    }
+    public static void deleteOldNews(){
+        mDb.delete(TABLE_NAME, null, null);
     }
 
     //get all news items in the database
     private Cursor getAllNewsItems(){
         return mDb.query(
-                NewsAppContract.NewsAppEntry.TABLE_NAME,
+                TABLE_NAME,
                 null,
                 null,
                 null,
