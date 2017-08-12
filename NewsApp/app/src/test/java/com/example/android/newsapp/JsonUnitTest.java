@@ -1,0 +1,33 @@
+package com.example.android.newsapp;
+
+import com.example.android.newsapp.utilities.NetworkUtils;
+import com.example.android.newsapp.utilities.NewsJsonUtils;
+
+import org.json.JSONException;
+import org.junit.Test;
+
+import java.net.URL;
+
+/**
+ * Created by apple on 6/27/17.
+ */
+
+public class JsonUnitTest {
+
+
+    @Test
+    public void JsonParseTest() throws JSONException{
+        URL newsRequestUrl = NetworkUtils.buildURL();
+        try {
+            String jsonNewsSearchResult = NetworkUtils.getResponseFromHttpUrl(newsRequestUrl);
+            //String jsonResult = "{\"status\":\"ok\",\"source\":\"the-next-web\",\"sortBy\":\"latest\",\"articles\":[{\"author\":\"TNW Deals\",\"title\":\"Get access to over 1,000 tech training courses for life, for under $80\",\"description\":\"You never know what you may need to know. Business and innovation is traveling at warp speed and no matter the industry, new technologies and new strategies are always ready to explode ...\",\"url\":\"https://thenextweb.com/offers/2017/06/27/get-access-1000-tech-training-courses-life-80/\",\"urlToImage\":\"https://cdn3.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/oad4S3J.jpg\",\"publishedAt\":\"2017-06-27T17:33:22Z\"},{\"author\":\"Matthew Hughes\",\"title\":\"Wimbledon serves up a new take on journalism in the age of AI\",\"description\":\"The Wimbledon Tournament is 150 years old. It is as quintessentially English as strawberries and cream, Hugh Grant, and Queen Elizabeth. But that's not to say that it's stuck in the ...\",\"url\":\"https://thenextweb.com/artificial-intelligence/2017/06/27/wimbledon-serves-new-take-journalism-age-ai/\",\"urlToImage\":\"https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/DSC_1014.jpg\",\"publishedAt\":\"2017-06-27T17:26:25Z\"},{\"author\":\"Shachar Shamir\",\"title\":\"Customer Behavior Analysis in the Telecom Arena\",\"description\":\"With increased competition in the telecom market, it has become even more vital for telecom operators to be proactive in providing services to their customers and to position themselves ...\",\"url\":\"https://thenextweb.com/contributors/2017/06/27/customer-behavior-analysis-telecom-arena/\",\"urlToImage\":\"https://cdn2.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/373710531664271.AgQVRuR7nAMQtgYdZe0E_height640.png\",\"publishedAt\":\"2017-06-27T17:01:40Z\"},{\"author\":\"Mix\",\"title\":\"Massive ransomware attack is causing chaos in airports, banks and more worldwide\",\"description\":\"A massive ransomware attack – dubbed Petya – is causing havoc at airports, banks and many other institutions across Europe.\\r\\n\\r\\nIt remains unclear who is behind the attack, but Moscow-based ...\",\"url\":\"https://thenextweb.com/insider/2017/06/27/ransomware-attack-banks-airports-europe/\",\"urlToImage\":\"https://cdn2.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/Screen-Shot-2017-06-27-at-16.59.59.png\",\"publishedAt\":\"2017-06-27T16:38:22Z\"},{\"author\":\"Napier Lopez\",\"title\":\"Huawei’s Honor 9 gets a great price tag, but it’s not coming to the US\",\"description\":\"Huawei's Honor 8 was one of my favorite budget-flagship phones last year, replicating most of the P9's specs in a $400 body. \\r\\n\\r\\nNow Huawei is at it again - the company today announced ...\",\"url\":\"https://thenextweb.com/gadgets/2017/06/27/huaweis-honor-9-gets-great-price-tag-not-coming-us/\",\"urlToImage\":\"https://cdn3.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/IMG_20170624_162401.jpg\",\"publishedAt\":\"2017-06-27T16:26:40Z\"},{\"author\":\"Josiah Motley\",\"title\":\"Our search experience is changing, here’s where one CEO sees it going\",\"description\":\"Barring any major shakeups to our current internet due to net neutrality laws, internet search is continuing to evolve and change in ways that help the end user, as well as the companies ...\",\"url\":\"https://thenextweb.com/contributors/2017/06/27/search-experience-changing-heres-one-ceo-sees-going/\",\"urlToImage\":\"https://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/future-of-search-featured.jpg\",\"publishedAt\":\"2017-06-27T16:01:17Z\"},{\"author\":\"Már Másson Maack\",\"title\":\"Fake news is your fault, this startup is trying to help\",\"description\":\"One of the horrible gifts that the year 2016 brought us was the rise of fake news, and we're still dealing with the consequences (cough Trump cough).\\r\\n\\r\\nFortunately, people all around ...\",\"url\":\"https://thenextweb.com/artificial-intelligence/2017/06/27/users-will-have-to-take-responsibility-for-fake-news/\",\"urlToImage\":\"https://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/fake-1909821_1280.jpg\",\"publishedAt\":\"2017-06-27T15:07:30Z\"},{\"author\":\"Matthew Hughes\",\"title\":\"Fiverr quits the race to the bottom with new premium freelancer marketplace\",\"description\":\"Fiverr is one of the most well-known freelance marketplaces, but it hardly has a reputation for excellence. It's not a premium brand. Rather, it's the place you go to when you need ...\",\"url\":\"https://thenextweb.com/insider/2017/06/27/fiverr-quits-the-race-to-the-bottom-with-new-premium-freelancer-marketplace/\",\"urlToImage\":\"https://cdn2.tnwcdn.com/wp-content/blogs.dir/1/files/2015/11/Fiverr-hed.jpg\",\"publishedAt\":\"2017-06-27T15:00:35Z\"},{\"author\":\"Mix\",\"title\":\"Apple’s new augmented reality kit makes Minecraft look magical in AR\",\"description\":\"Thanks to Apple and its new augmented reality framework for mobile, one resourceful game designer has managed to render smash-hit title Minecraft in AR – and it looks infinitely fun.\\r\\n\\r\\nToying ...\",\"url\":\"https://thenextweb.com/augmented-reality/2017/06/27/minecraft-apple-ar-arkit/\",\"urlToImage\":\"https://cdn2.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/Screen-Shot-2017-06-27-at-11.39.28.jpg\",\"publishedAt\":\"2017-06-27T14:15:45Z\"},{\"author\":\"Simon Kemp\",\"title\":\"Why algorithms will be at the core of our AI-powered future, and why you should care\",\"description\":\"For the second year in a row, We Are Social had the privilege of presenting at Vivid Sydney this year. Already one of the world’s leading festivals, Vivid is a bit like SXSW: an ...\",\"url\":\"https://thenextweb.com/artificial-intelligence/2017/06/27/algorithms-will-core-ai-powered-future-care/\",\"urlToImage\":\"https://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2017/06/Robot-Cover-Slide.png\",\"publishedAt\":\"2017-06-27T13:31:35Z\"}]}";
+
+            String[] parsedSearchResult = NewsJsonUtils.getSimpleStringsFromJson(jsonNewsSearchResult);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+}

@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //Cursor cursor = getAllNewsItems();
 
         //create Adapter object and connect RecyclerView with this Adapter
-        mNewsAppAdapter = new NewsAppAdapter(this);
+        mNewsAppAdapter = new NewsAppAdapter(this,this);
         mRecyclerView.setAdapter(mNewsAppAdapter);
 
         //init AsyncTaskLoader
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public Cursor loadInBackground() {
                 // Will implement to load data
                 try{
-                    //sync data
+                    //sync data -- pull data from api in json form then insert into database
                     syncNews();
 
                     //get cursor by querying database

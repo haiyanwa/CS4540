@@ -2,6 +2,7 @@ package com.example.android.newsapp;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +19,11 @@ import java.util.ArrayList;
 
 public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppAdapterViewHolder>{
 
+
     private ArrayList<NewsItem> newsItems;
     private Cursor mCursor;
     private NewsItem newsItem;
+    private final Context mContext;
 
     final private ListItemClickListener mOnClickListener;
 
@@ -30,9 +33,9 @@ public class NewsAppAdapter extends RecyclerView.Adapter<NewsAppAdapter.NewsAppA
         void onListItemClick(NewsItem newsItem);
     }
 
-    public NewsAppAdapter(ListItemClickListener listener){
+    public NewsAppAdapter(@NonNull Context context, ListItemClickListener listener){
         mOnClickListener = listener;
-
+        mContext = context;
     }
 
     @Override
